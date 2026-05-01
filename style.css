@@ -69,7 +69,7 @@ body {
   bottom: 28px;
   left: 32px;
   z-index: 100;
-  text-align: right;
+  text-align: left;
   transition: opacity 0.25s ease;
   pointer-events: none;
 }
