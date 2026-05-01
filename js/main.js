@@ -11,6 +11,8 @@
   const infoEl        = document.getElementById('artwork-info');
   const titleEl       = document.getElementById('artwork-title');
   const yearEl        = document.getElementById('artwork-year');
+  const materialsEl   = document.getElementById('artwork-materials');
+  const dimensionsEl  = document.getElementById('artwork-dimensions');
   const btnFS         = document.getElementById('btn-fullscreen');
   const arrowL        = document.getElementById('arrow-left');
   const arrowR        = document.getElementById('arrow-right');
@@ -97,8 +99,20 @@
     const mIdx    = mediaIndices[currentIndex];
     const total   = artwork.media.length;
 
-    titleEl.textContent = artwork.title;
-    yearEl.textContent  = artwork.year;
+    if (artwork.link) {
+      titleEl.innerHTML =
+        '<a class="artwork-title-link" href="' + artwork.link + '">' +
+        artwork.title +
+        '<svg class="link-icon" width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true">' +
+        '<path d="M1.5 8L7.5 1.5M7.5 1.5H3.5M7.5 1.5V5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+        '</a>';
+    } else {
+      titleEl.textContent = artwork.title;
+    }
+    yearEl.textContent       = artwork.year        || '';
+    materialsEl.textContent  = artwork.materials   || '';
+    dimensionsEl.textContent = artwork.dimensions  || '';
 
     document.body.classList.toggle('theme-bright', artwork.theme === 'bright');
 

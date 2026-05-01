@@ -74,7 +74,27 @@ body {
   pointer-events: none;
 }
 
+.artwork-title-link {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.artwork-title-link:hover {
+  opacity: 0.55;
+}
+
+.link-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+  margin-bottom: 1px;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
 .artwork-title {
+  display: block;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -82,7 +102,10 @@ body {
   transition: color 0.4s ease;
 }
 
-.artwork-year {
+.artwork-year,
+.artwork-materials,
+.artwork-dimensions {
+  display: block;
   font-size: 11px;
   font-weight: 300;
   opacity: 0.65;
@@ -90,6 +113,11 @@ body {
   letter-spacing: 0.04em;
   color: var(--ui-color);
   transition: color 0.4s ease;
+}
+
+.artwork-materials:empty,
+.artwork-dimensions:empty {
+  display: none;
 }
 
 /* ── Fullscreen button — bottom right ────────────────────── */
