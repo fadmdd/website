@@ -13,17 +13,22 @@
   const yearEl        = document.getElementById('artwork-year');
   const materialsEl   = document.getElementById('artwork-materials');
   const dimensionsEl  = document.getElementById('artwork-dimensions');
+  const bottomRight   = document.getElementById('bottom-right');
   const btnFS         = document.getElementById('btn-fullscreen');
+  const btnVideoLink  = document.getElementById('btn-video-link');
   const arrowL        = document.getElementById('arrow-left');
   const arrowR        = document.getElementById('arrow-right');
   const overlayImage  = document.getElementById('overlay-image');
   const overlayImg    = document.getElementById('overlay-img');
+  const overlayVimeo  = document.getElementById('overlay-vimeo');
+  const vimeoIframe   = document.getElementById('vimeo-iframe');
+  const btnCloseVimeo = document.getElementById('btn-close-vimeo');
   const overlayVideo  = document.getElementById('overlay-video');
   const overlayPlayer = document.getElementById('overlay-video-player');
   const btnCloseVideo = document.getElementById('btn-close-video');
   const aboutLink     = document.getElementById('about-link');
 
-  const uiElements = [navEl, infoEl, btnFS];
+  const uiElements = [navEl, infoEl, bottomRight];
 
   // ── Build DOM ────────────────────────────────────────────
   function buildArtworks() {
@@ -56,20 +61,28 @@
           vid.playsInline = true;
           vid.preload = 'auto';
           vid.setAttribute('playsinline', '');
-          // Seek before end-of-stream to avoid the black frame the decoder
-          // shows while resetting for a new loop.
           vid.addEventListener('timeupdate', function () {
             if (this.duration && this.currentTime > this.duration - 0.25) {
               this.currentTime = 0;
             }
           });
           wrap.appendChild(vid);
+        } else if (item.type === 'vimeo') {
+          const match = item.src.match(/vimeo\.com\/(\d+)/);
+          if (match) {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'https://player.vimeo.com/video/' + match[1] +
+              '?background=1&autoplay=1&loop=1&muted=1';
+            iframe.frameBorder = '0';
+            iframe.setAttribute('allow', 'autoplay; fullscreen');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+            wrap.appendChild(iframe);
+          }
         }
 
         track.appendChild(wrap);
       });
 
-      // Keep mediaIndices in sync when the user swipes natively.
       let scrollTimer = null;
       track.addEventListener('scroll', () => {
         clearTimeout(scrollTimer);
@@ -110,19 +123,20 @@
     } else {
       titleEl.textContent = artwork.title;
     }
-    yearEl.textContent       = artwork.year        || '';
-    materialsEl.textContent  = artwork.materials   || '';
-    dimensionsEl.textContent = artwork.dimensions  || '';
+    yearEl.textContent       = artwork.year       || '';
+    materialsEl.textContent  = artwork.materials  || '';
+    dimensionsEl.textContent = artwork.dimensions || '';
 
     document.body.classList.toggle('theme-bright', artwork.theme === 'bright');
+
+    // "full video" button — visible only when artwork has a Vimeo link
+    btnVideoLink.classList.toggle('visible', !!artwork.videoLink);
 
     arrowL.classList.toggle('visible', total > 1 && mIdx > 0);
     arrowR.classList.toggle('visible', total > 1 && mIdx < total - 1);
   }
 
   // ── Media navigation ──────────────────────────────────────
-  // Used by arrows, keyboard, and trackpad wheel.
-  // Touch/trackpad swipe is handled natively by the scroll-snap track.
   function navigateMedia(dir) {
     const artwork = artworks[currentIndex];
     const current = mediaIndices[currentIndex];
@@ -143,7 +157,7 @@
     updateUI();
   }
 
-  // ── Intersection observer (vertical artwork tracking) ─────
+  // ── Intersection observer ─────────────────────────────────
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
@@ -155,12 +169,10 @@
 
       const allSections = artworksEl.querySelectorAll('.artwork');
 
-      // Pause leaving video
       allSections[prevIndex]
         ?.querySelectorAll('.media-item')[mediaIndices[prevIndex]]
         ?.querySelector('video')?.pause();
 
-      // Play entering video
       allSections[currentIndex]
         ?.querySelectorAll('.media-item')[mediaIndices[currentIndex]]
         ?.querySelector('video')?.play().catch(() => {});
@@ -169,7 +181,7 @@
     });
   }, { root: artworksEl, threshold: 0.55 });
 
-  // ── Fullscreen ─────────────────────────────────────────────
+  // ── Show / hide all UI ────────────────────────────────────
   function hideUIElements() {
     uiElements.forEach(el => el.classList.add('ui-hidden'));
     arrowL.classList.add('ui-hidden');
@@ -183,6 +195,7 @@
     updateUI();
   }
 
+  // ── Fullscreen image / local video ────────────────────────
   function enterFullscreen() {
     const artwork = artworks[currentIndex];
     const media   = artwork.media[mediaIndices[currentIndex]];
@@ -198,6 +211,8 @@
       overlayVideo.classList.add('active');
       overlayPlayer.play().catch(() => {});
       hideUIElements();
+    } else if (media.type === 'vimeo') {
+      openVimeo();
     }
   }
 
@@ -214,11 +229,29 @@
     showUIElements();
   }
 
+  // ── Vimeo overlay ─────────────────────────────────────────
+  function openVimeo() {
+    const artwork = artworks[currentIndex];
+    if (!artwork.videoLink) return;
+    const match = artwork.videoLink.match(/vimeo\.com\/(\d+)/);
+    if (!match) return;
+    vimeoIframe.src = 'https://player.vimeo.com/video/' + match[1] +
+      '?autoplay=1&title=0&byline=0&portrait=0';
+    overlayVimeo.classList.add('active');
+    hideUIElements();
+  }
+
+  function closeVimeo() {
+    overlayVimeo.classList.remove('active');
+    vimeoIframe.src = '';
+    showUIElements();
+  }
+
   // ── Keyboard ───────────────────────────────────────────────
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft')  navigateMedia(-1);
     if (e.key === 'ArrowRight') navigateMedia(1);
-    if (e.key === 'Escape') { exitImageFS(); exitVideoFS(); }
+    if (e.key === 'Escape') { exitImageFS(); exitVideoFS(); closeVimeo(); }
     if (e.key === 'f' || e.key === 'F') enterFullscreen();
   });
 
@@ -226,8 +259,10 @@
   arrowL.addEventListener('click', () => navigateMedia(-1));
   arrowR.addEventListener('click', () => navigateMedia(1));
   btnFS.addEventListener('click', enterFullscreen);
+  btnVideoLink.addEventListener('click', openVimeo);
   overlayImage.addEventListener('click', exitImageFS);
   btnCloseVideo.addEventListener('click', exitVideoFS);
+  btnCloseVimeo.addEventListener('click', closeVimeo);
 
   aboutLink.addEventListener('click', () => {
     sessionStorage.setItem('returnIndex', currentIndex);
