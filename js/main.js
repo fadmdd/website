@@ -15,7 +15,7 @@
   const dimensionsEl  = document.getElementById('artwork-dimensions');
   const bottomRight   = document.getElementById('bottom-right');
   const btnFS         = document.getElementById('btn-fullscreen');
-  const btnVideoLink  = document.getElementById('btn-video-link');
+  const btnFSText     = document.getElementById('btn-fullscreen-text');
   const arrowL        = document.getElementById('arrow-left');
   const arrowR        = document.getElementById('arrow-right');
   const overlayImage  = document.getElementById('overlay-image');
@@ -36,6 +36,7 @@
       const section = document.createElement('section');
       section.className = 'artwork';
       section.dataset.index = i;
+      if (artwork.bg) section.style.background = artwork.bg;
 
       const track = document.createElement('div');
       track.className = 'media-track';
@@ -68,16 +69,11 @@
           });
           wrap.appendChild(vid);
         } else if (item.type === 'vimeo') {
-          const match = item.src.match(/vimeo\.com\/(\d+)/);
-          if (match) {
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://player.vimeo.com/video/' + match[1] +
-              '?background=1&autoplay=1&loop=1&muted=1';
-            iframe.frameBorder = '0';
-            iframe.setAttribute('allow', 'autoplay; fullscreen');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
-            wrap.appendChild(iframe);
-          }
+          // Vimeo privacy may block embedding. Show a dark placeholder;
+          // the merged fullscreen button opens the full video overlay.
+          const placeholder = document.createElement('div');
+          placeholder.style.cssText = 'width:100%;height:100%;';
+          wrap.appendChild(placeholder);
         }
 
         track.appendChild(wrap);
@@ -127,10 +123,12 @@
     materialsEl.textContent  = artwork.materials  || '';
     dimensionsEl.textContent = artwork.dimensions || '';
 
+    // Theme and background colour
     document.body.classList.toggle('theme-bright', artwork.theme === 'bright');
+    document.body.style.background = artwork.bg || '#000';
 
-    // "full video" button — visible only when artwork has a Vimeo link
-    btnVideoLink.classList.toggle('visible', !!artwork.videoLink);
+    // Merged button: show "full video" text when artwork has a Vimeo link
+    btnFSText.textContent = artwork.videoLink ? 'full video' : '';
 
     arrowL.classList.toggle('visible', total > 1 && mIdx > 0);
     arrowR.classList.toggle('visible', total > 1 && mIdx < total - 1);
@@ -181,7 +179,7 @@
     });
   }, { root: artworksEl, threshold: 0.55 });
 
-  // ── Show / hide all UI ────────────────────────────────────
+  // ── Show / hide UI ─────────────────────────────────────────
   function hideUIElements() {
     uiElements.forEach(el => el.classList.add('ui-hidden'));
     arrowL.classList.add('ui-hidden');
@@ -195,13 +193,21 @@
     updateUI();
   }
 
-  // ── Fullscreen image / local video ────────────────────────
+  // ── Merged fullscreen button ───────────────────────────────
+  // If artwork has a videoLink → open Vimeo overlay.
+  // Otherwise → show image or local video fullscreen.
   function enterFullscreen() {
     const artwork = artworks[currentIndex];
     const media   = artwork.media[mediaIndices[currentIndex]];
 
+    if (artwork.videoLink) {
+      openVimeo();
+      return;
+    }
+
     if (media.type === 'image') {
       overlayImg.src = media.src;
+      overlayImage.style.background = artwork.bg || '#000';
       overlayImage.classList.add('active');
       hideUIElements();
     } else if (media.type === 'video') {
@@ -211,8 +217,6 @@
       overlayVideo.classList.add('active');
       overlayPlayer.play().catch(() => {});
       hideUIElements();
-    } else if (media.type === 'vimeo') {
-      openVimeo();
     }
   }
 
@@ -259,7 +263,6 @@
   arrowL.addEventListener('click', () => navigateMedia(-1));
   arrowR.addEventListener('click', () => navigateMedia(1));
   btnFS.addEventListener('click', enterFullscreen);
-  btnVideoLink.addEventListener('click', openVimeo);
   overlayImage.addEventListener('click', exitImageFS);
   btnCloseVideo.addEventListener('click', exitVideoFS);
   btnCloseVimeo.addEventListener('click', closeVimeo);

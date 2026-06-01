@@ -126,37 +126,13 @@ body {
   bottom: 28px;
   right: 32px;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 14px;
   transition: opacity 0.25s ease;
 }
 
-.btn-video-link {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 0;
-  color: var(--ui-color);
-  font-family: inherit;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.6;
-  transition: color 0.4s ease, opacity 0.2s;
-  line-height: 1;
-}
-
-.btn-video-link.visible {
-  display: block;
-}
-
-.btn-video-link:hover {
-  opacity: 1;
-}
-
 .btn-fullscreen {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   background: none;
   border: none;
   cursor: pointer;
@@ -164,11 +140,18 @@ body {
   color: var(--ui-color);
   opacity: 0.6;
   transition: color 0.4s ease, opacity 0.2s;
-  line-height: 0;
+  line-height: 1;
 }
 
 .btn-fullscreen:hover {
   opacity: 1;
+}
+
+.btn-fullscreen-text {
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ── Side arrows ──────────────────────────────────────────── */
