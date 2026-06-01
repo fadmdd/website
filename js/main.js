@@ -51,6 +51,7 @@
           img.alt = artwork.title;
           img.loading = j === 0 && i === 0 ? 'eager' : 'lazy';
           img.draggable = false;
+          if (artwork.bg) img.style.objectFit = 'contain';
           wrap.appendChild(img);
         } else if (item.type === 'video') {
           const vid = document.createElement('video');
@@ -69,11 +70,16 @@
           });
           wrap.appendChild(vid);
         } else if (item.type === 'vimeo') {
-          // Vimeo privacy may block embedding. Show a dark placeholder;
-          // the merged fullscreen button opens the full video overlay.
-          const placeholder = document.createElement('div');
-          placeholder.style.cssText = 'width:100%;height:100%;';
-          wrap.appendChild(placeholder);
+          const match = item.src.match(/vimeo\.com\/(\d+)/);
+          if (match) {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'https://player.vimeo.com/video/' + match[1] +
+              '?background=1&autoplay=1&loop=1&muted=1';
+            iframe.frameBorder = '0';
+            iframe.setAttribute('allow', 'autoplay; fullscreen');
+            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+            wrap.appendChild(iframe);
+          }
         }
 
         track.appendChild(wrap);
@@ -214,6 +220,7 @@
       overlayPlayer.src = media.src;
       overlayPlayer.loop = media.loop !== false;
       overlayPlayer.currentTime = 0;
+      overlayVideo.style.background = artwork.bg || '#000';
       overlayVideo.classList.add('active');
       overlayPlayer.play().catch(() => {});
       hideUIElements();
@@ -241,6 +248,7 @@
     if (!match) return;
     vimeoIframe.src = 'https://player.vimeo.com/video/' + match[1] +
       '?autoplay=1&title=0&byline=0&portrait=0';
+    overlayVimeo.style.background = artwork.bg || '#000';
     overlayVimeo.classList.add('active');
     hideUIElements();
   }

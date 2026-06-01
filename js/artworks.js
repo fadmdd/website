@@ -30,6 +30,7 @@ const artworks = [
     year: "2024 - ongoing",
     materials: "installation",
     dimensions: "12 × 8 cm × 12 cm",
+    theme: "bright",
     media: [
       { type: "image", src: "assets/fragments1.jpg" }
     ]
@@ -59,6 +60,7 @@ const artworks = [
     year: "2024",
     materials: "book",
     dimensions: "8 cm × 12 cm",
+    theme: "bright",
     media: [
       { type: "image", src: "assets/book1.jpg" }
     ]
