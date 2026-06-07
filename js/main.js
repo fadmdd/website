@@ -53,6 +53,7 @@
           img.draggable = false;
           if (artwork.bg) img.style.objectFit = 'contain';
           wrap.appendChild(img);
+          wrap.addEventListener('click', () => { if (i === currentIndex) enterFullscreen(); });
         } else if (item.type === 'video') {
           const vid = document.createElement('video');
           vid.src = item.src;
@@ -69,6 +70,7 @@
             }
           });
           wrap.appendChild(vid);
+          wrap.addEventListener('click', () => { if (i === currentIndex) enterFullscreen(); });
         } else if (item.type === 'vimeo') {
           const match = item.src.match(/vimeo\.com\/(\d+)/);
           if (match) {
@@ -77,8 +79,13 @@
               '?background=1&autoplay=1&loop=1&muted=1';
             iframe.frameBorder = '0';
             iframe.setAttribute('allow', 'autoplay; fullscreen');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;position:absolute;inset:0;';
+            wrap.style.position = 'relative';
             wrap.appendChild(iframe);
+            const clickLayer = document.createElement('div');
+            clickLayer.style.cssText = 'position:absolute;inset:0;cursor:pointer;';
+            clickLayer.addEventListener('click', () => { if (i === currentIndex) enterFullscreen(); });
+            wrap.appendChild(clickLayer);
           }
         }
 
