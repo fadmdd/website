@@ -255,10 +255,11 @@ body {
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.35);
   color: #fff;
-  padding: 5px 14px;
+  padding: 11px 14px;
   border-radius: 20px;
-  font-size: 11px;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   pointer-events: none;
 }
