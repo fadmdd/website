@@ -250,7 +250,7 @@ body {
 /* ── Image caption ────────────────────────────────────────── */
 .media-caption {
   position: absolute;
-  bottom: 28px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.35);
@@ -265,7 +265,7 @@ body {
 
 @media (max-width: 600px) {
   .media-caption {
-    bottom: 24px;
+    bottom: 36px;
   }
 }
 
