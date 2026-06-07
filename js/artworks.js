@@ -17,7 +17,6 @@ const artworks = [
   {
     title: "existence between bodies",
     year: "2026",
-    link: "performance.html",
     videoLink: "https://vimeo.com/1197444287",
     materials: "performance",
     dimensions: "",

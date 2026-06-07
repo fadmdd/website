@@ -25,8 +25,16 @@ html, body {
   flex: 1;
   min-width: 0;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+}
+
+.linked-duo img:first-child {
+  object-position: right center;
+}
+
+.linked-duo img:last-child {
+  object-position: left center;
 }
 
 /* ── Single full-screen image ────────────────────────────── */
