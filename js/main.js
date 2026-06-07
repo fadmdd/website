@@ -53,6 +53,12 @@
           img.draggable = false;
           if (artwork.bg) img.style.objectFit = 'contain';
           wrap.appendChild(img);
+          if (item.caption) {
+            const cap = document.createElement('span');
+            cap.className = 'media-caption';
+            cap.textContent = item.caption;
+            wrap.appendChild(cap);
+          }
           wrap.addEventListener('click', () => { if (i === currentIndex) enterFullscreen(); });
         } else if (item.type === 'video') {
           const vid = document.createElement('video');

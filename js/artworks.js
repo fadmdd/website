@@ -54,11 +54,11 @@ const artworks = [
     media: [
       { type: "image", src: "assets/beep beep/1.jpeg" },
       { type: "image", src: "assets/beep beep/2.jpeg" },
-      { type: "image", src: "assets/beep beep/3.jpeg" },
-      { type: "image", src: "assets/beep beep/4.jpeg" },
-      { type: "image", src: "assets/beep beep/5.jpeg" },
-      { type: "image", src: "assets/beep beep/6.jpeg" },
-      { type: "image", src: "assets/beep beep/7.jpeg" }
+      { type: "image", src: "assets/beep beep/3.jpeg", caption: "Lisa Butzer" },
+      { type: "image", src: "assets/beep beep/4.jpeg", caption: "Anna Schmidt" },
+      { type: "image", src: "assets/beep beep/5.jpeg", caption: "Sion Sung" },
+      { type: "image", src: "assets/beep beep/6.jpeg", caption: "Helena Röpken, and in the background Charlotte Schicketanz" },
+      { type: "image", src: "assets/beep beep/7.jpeg", caption: "Honorata Nel Hoffman" }
     ]
   },
   {
