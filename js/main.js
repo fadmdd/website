@@ -12,6 +12,7 @@
   const titleEl       = document.getElementById('artwork-title');
   const yearEl        = document.getElementById('artwork-year');
   const materialsEl   = document.getElementById('artwork-materials');
+  const subtitleEl    = document.getElementById('artwork-subtitle');
   const dimensionsEl  = document.getElementById('artwork-dimensions');
   const bottomRight   = document.getElementById('bottom-right');
   const btnFS         = document.getElementById('btn-fullscreen');
@@ -138,6 +139,7 @@
     } else {
       titleEl.textContent = artwork.title;
     }
+    subtitleEl.textContent   = artwork.subtitle   || '';
     yearEl.textContent       = artwork.year       || '';
     materialsEl.textContent  = artwork.materials  || '';
     dimensionsEl.textContent = artwork.dimensions || '';

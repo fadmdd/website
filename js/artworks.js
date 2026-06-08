@@ -17,6 +17,7 @@ const artworks = [
   {
     title: "existence between bodies",
     year: "2026",
+    subtitle: "with Amina Bassyouni, Çagla Gillis, Meike Kiehl,\nDavid Meier, Helena Röpken, and Moira Schulz",
     videoLink: "https://vimeo.com/1197444287",
     materials: "performance",
     dimensions: "",

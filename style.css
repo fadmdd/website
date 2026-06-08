@@ -102,6 +102,7 @@ body {
   transition: color 0.4s ease;
 }
 
+.artwork-subtitle,
 .artwork-year,
 .artwork-materials,
 .artwork-dimensions {
@@ -115,6 +116,11 @@ body {
   transition: color 0.4s ease;
 }
 
+.artwork-subtitle {
+  white-space: pre-line;
+}
+
+.artwork-subtitle:empty,
 .artwork-materials:empty,
 .artwork-dimensions:empty {
   display: none;
