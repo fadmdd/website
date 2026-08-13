@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  // ── Bunny Stream ─────────────────────────────────────────
+  const BUNNY_HOST  = 'https://iframe.mediadelivery.net/embed/';
+  const BUNNY_ALLOW = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen;';
+
   // ── State ────────────────────────────────────────────────
   let currentIndex = 0;
   const mediaIndices = artworks.map(() => 0);
@@ -21,9 +25,9 @@
   const arrowR        = document.getElementById('arrow-right');
   const overlayImage  = document.getElementById('overlay-image');
   const overlayImg    = document.getElementById('overlay-img');
-  const overlayVimeo  = document.getElementById('overlay-vimeo');
-  const vimeoIframe   = document.getElementById('vimeo-iframe');
-  const btnCloseVimeo = document.getElementById('btn-close-vimeo');
+  const overlayBunny  = document.getElementById('overlay-vimeo');
+  const bunnyIframe   = document.getElementById('vimeo-iframe');
+  const btnCloseBunny = document.getElementById('btn-close-vimeo');
   const overlayVideo  = document.getElementById('overlay-video');
   const overlayPlayer = document.getElementById('overlay-video-player');
   const btnCloseVideo = document.getElementById('btn-close-video');
@@ -37,6 +41,8 @@
       const section = document.createElement('section');
       section.className = 'artwork';
       section.dataset.index = i;
+      if (artwork.bunnyLibraryId) section.dataset.libraryId = artwork.bunnyLibraryId;
+      if (artwork.bunnyVideoId)   section.dataset.videoId   = artwork.bunnyVideoId;
       if (artwork.bg) section.style.background = artwork.bg;
 
       const track = document.createElement('div');
@@ -78,15 +84,18 @@
           });
           wrap.appendChild(vid);
           wrap.addEventListener('click', () => { if (i === currentIndex) enterFullscreen(); });
-        } else if (item.type === 'vimeo') {
-          const match = item.src.match(/vimeo\.com\/(\d+)/);
-          if (match) {
+        } else if (item.type === 'bunny') {
+          const lib = item.libraryId || artwork.bunnyLibraryId;
+          const vid = item.videoId   || artwork.bunnyVideoId;
+          if (lib && vid) {
             const iframe = document.createElement('iframe');
-            iframe.src = 'https://player.vimeo.com/video/' + match[1] +
-              '?background=1&autoplay=1&loop=1&muted=1';
-            iframe.frameBorder = '0';
-            iframe.setAttribute('allow', 'autoplay; fullscreen');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;position:absolute;inset:0;';
+            // Ambient gallery panel: silent, looping, no controls.
+            iframe.src = BUNNY_HOST + lib + '/' + vid +
+              '?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false';
+            iframe.loading = 'lazy';
+            iframe.setAttribute('allow', BUNNY_ALLOW);
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;position:absolute;inset:0;';
             wrap.style.position = 'relative';
             wrap.appendChild(iframe);
             const clickLayer = document.createElement('div');
@@ -148,8 +157,8 @@
     document.body.classList.toggle('theme-bright', artwork.theme === 'bright');
     document.body.style.background = artwork.bg || '#000';
 
-    // Merged button: show "full video" text when artwork has a Vimeo link
-    btnFSText.textContent = artwork.videoLink ? 'full video' : '';
+    // Merged button: show "full video" text when artwork has a Bunny video
+    btnFSText.textContent = artwork.bunnyVideoId ? 'full video' : '';
 
     arrowL.classList.toggle('visible', total > 1 && mIdx > 0);
     arrowR.classList.toggle('visible', total > 1 && mIdx < total - 1);
@@ -215,14 +224,14 @@
   }
 
   // ── Merged fullscreen button ───────────────────────────────
-  // If artwork has a videoLink → open Vimeo overlay.
+  // If artwork has Bunny ids → open Bunny overlay.
   // Otherwise → show image or local video fullscreen.
   function enterFullscreen() {
     const artwork = artworks[currentIndex];
     const media   = artwork.media[mediaIndices[currentIndex]];
 
-    if (artwork.videoLink) {
-      openVimeo();
+    if (artwork.bunnyVideoId) {
+      openBunny();
       return;
     }
 
@@ -255,22 +264,24 @@
     showUIElements();
   }
 
-  // ── Vimeo overlay ─────────────────────────────────────────
-  function openVimeo() {
+  // ── Bunny Stream overlay ──────────────────────────────────
+  // Reads the ids from the tile's data-library-id / data-video-id.
+  function openBunny() {
     const artwork = artworks[currentIndex];
-    if (!artwork.videoLink) return;
-    const match = artwork.videoLink.match(/vimeo\.com\/(\d+)/);
-    if (!match) return;
-    vimeoIframe.src = 'https://player.vimeo.com/video/' + match[1] +
-      '?autoplay=1&title=0&byline=0&portrait=0';
-    overlayVimeo.style.background = artwork.bg || '#000';
-    overlayVimeo.classList.add('active');
+    const section = artworksEl.querySelectorAll('.artwork')[currentIndex];
+    const lib = section?.dataset.libraryId || artwork.bunnyLibraryId;
+    const vid = section?.dataset.videoId   || artwork.bunnyVideoId;
+    if (!lib || !vid) return;
+
+    bunnyIframe.src = BUNNY_HOST + lib + '/' + vid + '?autoplay=true&preload=true';
+    overlayBunny.style.background = artwork.bg || '#000';
+    overlayBunny.classList.add('active');
     hideUIElements();
   }
 
-  function closeVimeo() {
-    overlayVimeo.classList.remove('active');
-    vimeoIframe.src = '';
+  function closeBunny() {
+    overlayBunny.classList.remove('active');
+    bunnyIframe.src = '';
     showUIElements();
   }
 
@@ -278,7 +289,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft')  navigateMedia(-1);
     if (e.key === 'ArrowRight') navigateMedia(1);
-    if (e.key === 'Escape') { exitImageFS(); exitVideoFS(); closeVimeo(); }
+    if (e.key === 'Escape') { exitImageFS(); exitVideoFS(); closeBunny(); }
     if (e.key === 'f' || e.key === 'F') enterFullscreen();
   });
 
@@ -288,7 +299,7 @@
   btnFS.addEventListener('click', enterFullscreen);
   overlayImage.addEventListener('click', exitImageFS);
   btnCloseVideo.addEventListener('click', exitVideoFS);
-  btnCloseVimeo.addEventListener('click', closeVimeo);
+  btnCloseBunny.addEventListener('click', closeBunny);
 
   aboutLink.addEventListener('click', () => {
     sessionStorage.setItem('returnIndex', currentIndex);

@@ -3,22 +3,25 @@
 // media types:
 //   "image"  — jpg, jpeg, png, webp  →  src: "assets/filename.jpg"
 //   "video"  — local mp4/m4v file    →  src: "assets/filename.mp4"
-//   "vimeo"  — Vimeo URL as ambient gallery panel (opens full video via button)
+//   "bunny"  — Bunny Stream video as ambient gallery panel (autoplays muted,
+//              loops, no controls). Needs libraryId + videoId.
 //
 // Optional fields:
-//   link       — detail page that opens when the title ↗ is clicked
-//   videoLink  — Vimeo URL; merged fullscreen button opens this video
-//   materials  — third line of the bottom-left label
-//   dimensions — fourth line of the bottom-left label
-//   theme      — "bright" makes all overlay text black (for light artworks)
-//   bg         — background colour of the artwork panel, e.g. "#fff"
+//   link            — detail page that opens when the title ↗ is clicked
+//   bunnyLibraryId  — Bunny Stream library id; with bunnyVideoId the merged
+//   bunnyVideoId      fullscreen button opens that video with sound + controls
+//   materials       — third line of the bottom-left label
+//   dimensions      — fourth line of the bottom-left label
+//   theme           — "bright" makes all overlay text black (for light artworks)
+//   bg              — background colour of the artwork panel, e.g. "#fff"
 
 const artworks = [
   {
     title: "existence between bodies",
     year: "2026",
     subtitle: "with Amina Bassyouni, Çagla Gillis, Meike Kiehl,\nDavid Meier, Helena Röpken, and Moira Schulz",
-    videoLink: "https://vimeo.com/1197444287",
+    bunnyLibraryId: "725887",
+    bunnyVideoId: "41e47cf1-f575-4dd8-83c9-4d246b49ee86",
     materials: "performance",
     dimensions: "",
     media: [
@@ -65,11 +68,12 @@ const artworks = [
   {
     title: "work",
     year: "2025",
-    videoLink: "https://vimeo.com/1197448185",
+    bunnyLibraryId: "725887",
+    bunnyVideoId: "97c49dcc-20d8-4d82-8b07-74ec59c0041f",
     materials: "video",
     dimensions: "",
     media: [
-      { type: "vimeo", src: "https://vimeo.com/1197448185" }
+      { type: "bunny", libraryId: "725887", videoId: "97c49dcc-20d8-4d82-8b07-74ec59c0041f" }
     ]
   },
   {
